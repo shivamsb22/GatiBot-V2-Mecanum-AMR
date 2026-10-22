@@ -1,0 +1,312 @@
+<?xml version="1.0"?>
+<robot name="gatibot_v2"
+       xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Dimensions in metres -->
+  <xacro:property name="L" value="0.170"/>
+  <xacro:property name="W" value="0.170"/>
+  <xacro:property name="T0" value="0.003"/>
+  <xacro:property name="T" value="0.002"/>
+  <xacro:property name="GAP" value="0.040"/>
+
+  <xacro:property name="R" value="0.030"/>
+  <xacro:property name="WW" value="0.025"/>
+  <xacro:property name="WX" value="0.065"/>
+  <xacro:property name="WY" value="0.090"/>
+
+  <!-- Plate centre heights above the ground -->
+  <xacro:property name="Z0" value="0.090"/>
+  <xacro:property name="Z1" value="${Z0 + GAP}"/>
+  <xacro:property name="Z2" value="${Z1 + GAP}"/>
+  <xacro:property name="Z3" value="${Z2 + GAP}"/>
+
+  <!-- Main reference frame -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 ${Z0}"/>
+      <geometry>
+        <box size="${L} ${W} ${T0}"/>
+      </geometry>
+      <material name="bottom_plate">
+        <color rgba="0.20 0.21 0.23 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 ${Z0}"/>
+      <geometry>
+        <box size="${L} ${W} ${T0}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 ${Z0}"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.005" ixy="0" ixz="0"
+               iyy="0.005" iyz="0" izz="0.005"/>
+    </inertial>
+  </link>
+
+  <!-- Three additional chassis plates -->
+  <xacro:macro name="plate" params="name z">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <box size="${L} ${W} ${T}"/>
+        </geometry>
+        <material name="plate_black">
+          <color rgba="0.12 0.13 0.15 1"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="${L} ${W} ${T}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.15"/>
+        <inertia ixx="0.0001" ixy="0" ixz="0"
+                 iyy="0.0001" iyz="0" izz="0.0001"/>
+      </inertial>
+    </link>
+
+    <joint name="${name}_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="${name}"/>
+      <origin xyz="0 0 ${z}"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:plate name="middle_plate_1" z="${Z1}"/>
+  <xacro:plate name="middle_plate_2" z="${Z2}"/>
+  <xacro:plate name="top_plate" z="${Z3}"/>
+
+  <!-- Spacers for every gap between plates -->
+  <xacro:macro name="spacer" params="name x y z">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <cylinder radius="0.003" length="${GAP}"/>
+        </geometry>
+        <material name="spacer_metal">
+          <color rgba="0.55 0.57 0.60 1"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="0.003" length="${GAP}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.015"/>
+        <inertia ixx="0.000003" ixy="0" ixz="0"
+                 iyy="0.000003" iyz="0" izz="0.000001"/>
+      </inertial>
+    </link>
+
+    <joint name="${name}_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="${name}"/>
+      <origin xyz="${x} ${y} ${z}"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- First gap -->
+  <xacro:spacer name="spacer_1_fl" x="0.070" y="0.070" z="${Z0 + GAP/2}"/>
+  <xacro:spacer name="spacer_1_fr" x="0.070" y="-0.070" z="${Z0 + GAP/2}"/>
+  <xacro:spacer name="spacer_1_rl" x="-0.070" y="0.070" z="${Z0 + GAP/2}"/>
+  <xacro:spacer name="spacer_1_rr" x="-0.070" y="-0.070" z="${Z0 + GAP/2}"/>
+
+  <!-- Second gap -->
+  <xacro:spacer name="spacer_2_fl" x="0.070" y="0.070" z="${Z1 + GAP/2}"/>
+  <xacro:spacer name="spacer_2_fr" x="0.070" y="-0.070" z="${Z1 + GAP/2}"/>
+  <xacro:spacer name="spacer_2_rl" x="-0.070" y="0.070" z="${Z1 + GAP/2}"/>
+  <xacro:spacer name="spacer_2_rr" x="-0.070" y="-0.070" z="${Z1 + GAP/2}"/>
+
+  <!-- Third gap -->
+  <xacro:spacer name="spacer_3_fl" x="0.070" y="0.070" z="${Z2 + GAP/2}"/>
+  <xacro:spacer name="spacer_3_fr" x="0.070" y="-0.070" z="${Z2 + GAP/2}"/>
+  <xacro:spacer name="spacer_3_rl" x="-0.070" y="0.070" z="${Z2 + GAP/2}"/>
+  <xacro:spacer name="spacer_3_rr" x="-0.070" y="-0.070" z="${Z2 + GAP/2}"/>
+
+  <!-- Four wheel assemblies -->
+  <xacro:macro name="wheel" params="name x y">
+    <link name="${name}">
+      <visual>
+        <origin rpy="1.5707963 0 0"/>
+        <geometry>
+          <cylinder radius="${R}" length="${WW}"/>
+        </geometry>
+        <material name="wheel_dark">
+          <color rgba="0.12 0.14 0.17 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin rpy="1.5707963 0 0"/>
+        <geometry>
+          <cylinder radius="${R}" length="${WW}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.15"/>
+        <inertia ixx="0.00008" ixy="0" ixz="0"
+                 iyy="0.00008" iyz="0" izz="0.00008"/>
+      </inertial>
+    </link>
+
+    <joint name="${name}_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${name}"/>
+      <origin xyz="${x} ${y} ${R}"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:wheel name="front_left_wheel" x="${WX}" y="${WY}"/>
+  <xacro:wheel name="front_right_wheel" x="${WX}" y="${-WY}"/>
+  <xacro:wheel name="rear_left_wheel" x="${-WX}" y="${WY}"/>
+  <xacro:wheel name="rear_right_wheel" x="${-WX}" y="${-WY}"/>
+
+  <!-- Motor housings moved inward to clear the wheels -->
+  <xacro:macro name="motor" params="name x y">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <box size="0.040 0.030 0.035"/>
+        </geometry>
+        <material name="motor_blue">
+          <color rgba="0.05 0.30 0.70 1"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.040 0.030 0.035"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.10"/>
+        <inertia ixx="0.00003" ixy="0" ixz="0"
+                 iyy="0.00003" iyz="0" izz="0.00003"/>
+      </inertial>
+    </link>
+
+    <joint name="${name}_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="${name}"/>
+      <origin xyz="${x} ${y} 0.060"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- Motors sit inboard of the wheel centres -->
+  <xacro:motor name="front_left_motor"  x="0.055"  y="0.055"/>
+  <xacro:motor name="front_right_motor" x="0.055"  y="-0.055"/>
+  <xacro:motor name="rear_left_motor"   x="-0.055" y="0.055"/>
+  <xacro:motor name="rear_right_motor"  x="-0.055" y="-0.055"/>
+
+  <!-- Battery mounted separately on the bottom chassis plate -->
+  <link name="battery_link">
+    <visual>
+      <geometry>
+        <box size="0.080 0.050 0.025"/>
+      </geometry>
+      <material name="battery_black">
+        <color rgba="0.08 0.09 0.11 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.080 0.050 0.025"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.30"/>
+      <inertia ixx="0.0002" ixy="0" ixz="0"
+               iyy="0.0002" iyz="0" izz="0.0002"/>
+    </inertial>
+  </link>
+
+  <joint name="battery_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="battery_link"/>
+    <origin xyz="0 0 0.108"/>
+  </joint>
+
+  <!-- RPLIDAR A1: approximate visual envelope -->
+  <link name="rplidar_link">
+    <visual>
+      <geometry>
+        <cylinder radius="0.0485" length="0.055"/>
+      </geometry>
+      <material name="lidar_black">
+        <color rgba="0.08 0.08 0.08 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.0485" length="0.055"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.17"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0"
+               iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <joint name="rplidar_joint" type="fixed">
+    <parent link="top_plate"/>
+    <child link="rplidar_link"/>
+    <origin xyz="0 0 0.0305"/>
+  </joint>
+
+
+  <!-- Gazebo Classic simulated 2D lidar -->
+  <gazebo reference="rplidar_link">
+    <sensor name="rplidar_scan" type="ray">
+      <pose>0 0 0 0 0 0</pose>
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <update_rate>10</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159265</min_angle>
+            <max_angle>3.14159265</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.15</min>
+          <max>12.0</max>
+          <resolution>0.01</resolution>
+        </range>
+      </ray>
+      <plugin name="gazebo_ros_ray_sensor"
+              filename="libgazebo_ros_ray_sensor.so">
+        <ros>
+          <remapping>~/out:=/scan</remapping>
+        </ros>
+        <output_type>sensor_msgs/LaserScan</output_type>
+        <frame_name>rplidar_link</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+
+  <!-- Temporary planar motion controller for testing -->
+  <gazebo>
+    <plugin name="gazebo_ros_planar_move"
+            filename="libgazebo_ros_planar_move.so">
+      <ros>
+        <remapping>cmd_vel:=/cmd_vel</remapping>
+      </ros>
+      <update_rate>50.0</update_rate>
+      <command_topic>cmd_vel</command_topic>
+      <odometry_topic>odom</odometry_topic>
+      <odometry_frame>odom</odometry_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+      <publish_odom>true</publish_odom>
+      <publish_odom_tf>true</publish_odom_tf>
+    </plugin>
+  </gazebo>
+
+</robot>
