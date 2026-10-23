@@ -67,6 +67,39 @@ The development workflow emphasizes simulation, subsystem validation, and contro
 
 > **Development status:** In development. A feature listed in this document is not necessarily fully integrated or validated on the physical robot.
 
+
+## 🧩 CAD Design Gallery
+
+<div align="center">
+
+**GatiBot V2 | Autodesk Fusion 360 Mechanical Design**
+
+<p>
+  <img src="docs/images/front_view.png" alt="GatiBot V2 front view" width="48%">
+  <img src="docs/images/right_side_view.png" alt="GatiBot V2 right-side view" width="48%">
+</p>
+
+<p>
+  <img src="docs/images/left_side_view.png" alt="GatiBot V2 left-side view" width="48%">
+  <img src="docs/images/diagonal_view.png" alt="GatiBot V2 diagonal CAD view" width="48%">
+</p>
+
+<sub>Four CAD perspectives showing the mechanical layout and component arrangement.</sub>
+
+</div>
+
+### Design highlights
+
+- **Four-layer chassis:** Modular mounting arrangement for electronics and sensors.
+- **Mecanum drive:** Four-wheel configuration designed for omnidirectional movement.
+- **LiDAR mounting:** Elevated sensor position for environmental scanning.
+- **Electronics integration:** Space allocated for onboard computing and motor-control hardware.
+- **Mechanical visualization:** Multiple views to communicate the design more clearly.
+
+*Images represent the CAD design. Physical dimensions, component fit, and real-world performance should be validated against the assembled robot.*
+
+---
+
 ## 02. Design Philosophy
 
 The system is organized into four engineering layers.
